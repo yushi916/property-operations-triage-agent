@@ -1,0 +1,31 @@
+{
+  "public_outage": {
+    "possible_same_event": [
+      "R-01",
+      "R-02"
+    ],
+    "hold_separate": [
+      "R-03"
+    ],
+    "needs_verification": [
+      "R-04"
+    ],
+    "stale_notice": "N-01",
+    "unknowns": [
+      "故障原因",
+      "完整受影响范围",
+      "预计恢复时间"
+    ],
+    "critical_report_work_orders": {
+      "R-03": "W-02"
+    }
+  },
+  "greenery": {
+    "plan_id": "P-01",
+    "conflicting_records": [
+      "W-01",
+      "I-01"
+    ],
+    "next_action": "现场复核，不自动判为完成"
+  }
+}

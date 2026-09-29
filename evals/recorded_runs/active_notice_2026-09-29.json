@@ -1,0 +1,541 @@
+{
+  "budget_note": "上限仅计算模型主动调用",
+  "max_tool_calls_at_run": 14,
+  "model": "gemini-3.5-flash-lite",
+  "recorded_on": "2026-09-29",
+  "run": {
+    "proposal": {
+      "next_actions": [
+        "联系工程运维人员跟进A-01设备的排查进度与抢修情况",
+        "核实5栋水压变低是否由同一设备故障引起",
+        "根据设备抢修进展及时更新居民通知状态"
+      ],
+      "notices": [
+        {
+          "evidence_refs": [
+            {
+              "id": "N-01",
+              "version": 1
+            }
+          ],
+          "notice_id": "N-01",
+          "time_relation": "expired"
+        },
+        {
+          "evidence_refs": [
+            {
+              "id": "N-02",
+              "version": 1
+            }
+          ],
+          "notice_id": "N-02",
+          "time_relation": "active"
+        }
+      ],
+      "reports": [
+        {
+          "evidence_refs": [
+            {
+              "id": "R-02",
+              "version": 1
+            },
+            {
+              "id": "W-03",
+              "version": 1
+            }
+          ],
+          "reason": "同为3栋居民反映整栋停水，发生时间接近，且对应共用设备A-01有调查中工单W-03",
+          "relation": "possible_same_event",
+          "report_id": "R-02"
+        },
+        {
+          "evidence_refs": [
+            {
+              "id": "R-03",
+              "version": 1
+            },
+            {
+              "id": "W-02",
+              "version": 1
+            }
+          ],
+          "reason": "R-03为室内局部设施损坏（厨房水龙头坏），已关联独立工单W-02，属于独立室内问题",
+          "relation": "hold_separate",
+          "report_id": "R-03"
+        },
+        {
+          "evidence_refs": [
+            {
+              "id": "R-04",
+              "version": 1
+            },
+            {
+              "id": "W-03",
+              "version": 1
+            }
+          ],
+          "reason": "5栋水压变低，虽与3栋共享加压设备A-01，但跨楼栋影响范围尚需进一步核实",
+          "relation": "needs_verification",
+          "report_id": "R-04"
+        }
+      ],
+      "seed_report_id": "R-01",
+      "unknowns": [
+        {
+          "code": "fault_cause",
+          "detail": "加压设备A-01压力异常的具体机械或电路故障原因尚在调查中"
+        },
+        {
+          "code": "impact_scope",
+          "detail": "除3栋外，5栋水压变低是否受A-01故障波及尚待全面确认"
+        },
+        {
+          "code": "restoration_time",
+          "detail": "设备正在排查中，具体供水恢复时间暂未确定"
+        }
+      ]
+    },
+    "report_id": "R-01",
+    "rounds": 2,
+    "status": "proposal",
+    "trace": [
+      {
+        "arguments": {
+          "report_id": "R-01"
+        },
+        "origin": "candidate_discovery",
+        "outcome": {
+          "ok": true,
+          "result": {
+            "record": {
+              "building": "3栋",
+              "id": "R-01",
+              "reported_at": "2026-09-28T09:05:00+08:00",
+              "text": "家里突然停水，邻居也说没有水",
+              "version": 1
+            },
+            "source_id": "R-01",
+            "source_version": 1
+          }
+        },
+        "tool": "get_report"
+      },
+      {
+        "arguments": {
+          "seed_report_id": "R-01",
+          "window_minutes": 30
+        },
+        "origin": "candidate_discovery",
+        "outcome": {
+          "ok": true,
+          "result": {
+            "evidence": [
+              {
+                "record": {
+                  "building": "3栋",
+                  "id": "R-03",
+                  "reported_at": "2026-09-28T09:08:00+08:00",
+                  "text": "只有厨房水龙头坏了，卫生间供水正常",
+                  "version": 1
+                },
+                "source_id": "R-03",
+                "source_version": 1
+              },
+              {
+                "record": {
+                  "building": "3栋",
+                  "id": "R-02",
+                  "reported_at": "2026-09-28T09:14:00+08:00",
+                  "text": "整套房都没有水，楼上也在问",
+                  "version": 1
+                },
+                "source_id": "R-02",
+                "source_version": 1
+              }
+            ],
+            "query": {
+              "seed_report_id": "R-01",
+              "window_minutes": 30
+            }
+          }
+        },
+        "tool": "find_nearby_reports"
+      },
+      {
+        "arguments": {
+          "building": "3栋"
+        },
+        "origin": "candidate_discovery",
+        "outcome": {
+          "ok": true,
+          "result": {
+            "evidence": [
+              {
+                "record": {
+                  "id": "A-01",
+                  "name": "小区供水加压设备",
+                  "serves": [
+                    "3栋",
+                    "5栋"
+                  ],
+                  "version": 1
+                },
+                "source_id": "A-01",
+                "source_version": 1
+              }
+            ],
+            "query": {
+              "building": "3栋"
+            }
+          }
+        },
+        "tool": "lookup_assets_for_building"
+      },
+      {
+        "arguments": {
+          "around_at": "2026-09-28T09:05:00+08:00",
+          "asset_id": "A-01",
+          "window_minutes": 30
+        },
+        "origin": "candidate_discovery",
+        "outcome": {
+          "ok": true,
+          "result": {
+            "evidence": [
+              {
+                "record": {
+                  "building": "3栋",
+                  "id": "R-01",
+                  "reported_at": "2026-09-28T09:05:00+08:00",
+                  "text": "家里突然停水，邻居也说没有水",
+                  "version": 1
+                },
+                "source_id": "R-01",
+                "source_version": 1
+              },
+              {
+                "record": {
+                  "building": "3栋",
+                  "id": "R-03",
+                  "reported_at": "2026-09-28T09:08:00+08:00",
+                  "text": "只有厨房水龙头坏了，卫生间供水正常",
+                  "version": 1
+                },
+                "source_id": "R-03",
+                "source_version": 1
+              },
+              {
+                "record": {
+                  "building": "5栋",
+                  "id": "R-04",
+                  "reported_at": "2026-09-28T09:11:00+08:00",
+                  "text": "水压变低，是否与3栋的问题有关尚不清楚",
+                  "version": 1
+                },
+                "source_id": "R-04",
+                "source_version": 1
+              },
+              {
+                "record": {
+                  "building": "3栋",
+                  "id": "R-02",
+                  "reported_at": "2026-09-28T09:14:00+08:00",
+                  "text": "整套房都没有水，楼上也在问",
+                  "version": 1
+                },
+                "source_id": "R-02",
+                "source_version": 1
+              }
+            ],
+            "query": {
+              "around_at": "2026-09-28T09:05:00+08:00",
+              "asset_id": "A-01",
+              "window_minutes": 30
+            }
+          }
+        },
+        "tool": "find_reports_for_asset"
+      },
+      {
+        "arguments": {
+          "report_id": "R-01"
+        },
+        "outcome": {
+          "ok": true,
+          "result": {
+            "record": {
+              "building": "3栋",
+              "id": "R-01",
+              "reported_at": "2026-09-28T09:05:00+08:00",
+              "text": "家里突然停水，邻居也说没有水",
+              "version": 1
+            },
+            "source_id": "R-01",
+            "source_version": 1
+          }
+        },
+        "tool": "get_report"
+      },
+      {
+        "arguments": {
+          "report_id": "R-03"
+        },
+        "outcome": {
+          "ok": true,
+          "result": {
+            "record": {
+              "building": "3栋",
+              "id": "R-03",
+              "reported_at": "2026-09-28T09:08:00+08:00",
+              "text": "只有厨房水龙头坏了，卫生间供水正常",
+              "version": 1
+            },
+            "source_id": "R-03",
+            "source_version": 1
+          }
+        },
+        "tool": "get_report"
+      },
+      {
+        "arguments": {
+          "report_id": "R-04"
+        },
+        "outcome": {
+          "ok": true,
+          "result": {
+            "record": {
+              "building": "5栋",
+              "id": "R-04",
+              "reported_at": "2026-09-28T09:11:00+08:00",
+              "text": "水压变低，是否与3栋的问题有关尚不清楚",
+              "version": 1
+            },
+            "source_id": "R-04",
+            "source_version": 1
+          }
+        },
+        "tool": "get_report"
+      },
+      {
+        "arguments": {
+          "report_id": "R-02"
+        },
+        "outcome": {
+          "ok": true,
+          "result": {
+            "record": {
+              "building": "3栋",
+              "id": "R-02",
+              "reported_at": "2026-09-28T09:14:00+08:00",
+              "text": "整套房都没有水，楼上也在问",
+              "version": 1
+            },
+            "source_id": "R-02",
+            "source_version": 1
+          }
+        },
+        "tool": "get_report"
+      },
+      {
+        "arguments": {
+          "report_id": "R-01"
+        },
+        "outcome": {
+          "ok": true,
+          "result": {
+            "evidence": [],
+            "query": {
+              "report_id": "R-01"
+            }
+          }
+        },
+        "tool": "lookup_report_work_orders"
+      },
+      {
+        "arguments": {
+          "report_id": "R-03"
+        },
+        "outcome": {
+          "ok": true,
+          "result": {
+            "evidence": [
+              {
+                "record": {
+                  "asset_id": null,
+                  "completed_at": null,
+                  "description": "室内厨房水龙头损坏",
+                  "id": "W-02",
+                  "opened_at": null,
+                  "plan_id": null,
+                  "report_id": "R-03",
+                  "status": "open",
+                  "version": 1
+                },
+                "source_id": "W-02",
+                "source_version": 1
+              }
+            ],
+            "query": {
+              "report_id": "R-03"
+            }
+          }
+        },
+        "tool": "lookup_report_work_orders"
+      },
+      {
+        "arguments": {
+          "report_id": "R-04"
+        },
+        "outcome": {
+          "ok": true,
+          "result": {
+            "evidence": [],
+            "query": {
+              "report_id": "R-04"
+            }
+          }
+        },
+        "tool": "lookup_report_work_orders"
+      },
+      {
+        "arguments": {
+          "report_id": "R-02"
+        },
+        "outcome": {
+          "ok": true,
+          "result": {
+            "evidence": [],
+            "query": {
+              "report_id": "R-02"
+            }
+          }
+        },
+        "tool": "lookup_report_work_orders"
+      },
+      {
+        "arguments": {
+          "at": "2026-09-28T09:05:00+08:00",
+          "building": "3栋"
+        },
+        "outcome": {
+          "ok": true,
+          "result": {
+            "evidence": [
+              {
+                "record": {
+                  "building": "3栋",
+                  "ends_at": "2026-09-27T11:00:00+08:00",
+                  "id": "N-01",
+                  "starts_at": "2026-09-27T09:00:00+08:00",
+                  "text": "计划停水",
+                  "version": 1
+                },
+                "source_id": "N-01",
+                "source_version": 1,
+                "time_relation": "expired"
+              },
+              {
+                "record": {
+                  "building": "3栋",
+                  "ends_at": "2026-09-28T10:00:00+08:00",
+                  "id": "N-02",
+                  "starts_at": "2026-09-28T09:00:00+08:00",
+                  "text": "3栋计划停水通知；仅覆盖3栋，实际恢复情况以现场核实为准",
+                  "version": 1
+                },
+                "source_id": "N-02",
+                "source_version": 1,
+                "time_relation": "active"
+              }
+            ],
+            "query": {
+              "at": "2026-09-28T09:05:00+08:00",
+              "building": "3栋"
+            }
+          }
+        },
+        "tool": "lookup_notices"
+      },
+      {
+        "arguments": {
+          "at": "2026-09-28T09:11:00+08:00",
+          "building": "5栋"
+        },
+        "outcome": {
+          "ok": true,
+          "result": {
+            "evidence": [],
+            "query": {
+              "at": "2026-09-28T09:11:00+08:00",
+              "building": "5栋"
+            }
+          }
+        },
+        "tool": "lookup_notices"
+      },
+      {
+        "arguments": {
+          "building": "3栋"
+        },
+        "outcome": {
+          "ok": true,
+          "result": {
+            "evidence": [
+              {
+                "record": {
+                  "id": "A-01",
+                  "name": "小区供水加压设备",
+                  "serves": [
+                    "3栋",
+                    "5栋"
+                  ],
+                  "version": 1
+                },
+                "source_id": "A-01",
+                "source_version": 1
+              }
+            ],
+            "query": {
+              "building": "3栋"
+            }
+          }
+        },
+        "tool": "lookup_assets_for_building"
+      },
+      {
+        "arguments": {
+          "asset_id": "A-01"
+        },
+        "outcome": {
+          "ok": true,
+          "result": {
+            "evidence": [
+              {
+                "record": {
+                  "asset_id": "A-01",
+                  "completed_at": null,
+                  "description": "供水压力异常",
+                  "id": "W-03",
+                  "opened_at": "2026-09-28T09:00:00+08:00",
+                  "plan_id": null,
+                  "report_id": null,
+                  "status": "investigating",
+                  "version": 1
+                },
+                "source_id": "W-03",
+                "source_version": 1
+              }
+            ],
+            "query": {
+              "asset_id": "A-01"
+            }
+          }
+        },
+        "tool": "lookup_asset_work_orders"
+      }
+    ],
+    "validation_error": null
+  },
+  "run_note": "该场景的一次运行，未重复筛选成功样本",
+  "scenario": "active_notice"
+}
