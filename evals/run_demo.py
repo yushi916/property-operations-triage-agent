@@ -180,13 +180,28 @@ def main() -> None:
     args = parser.parse_args()
 
     result = run_demo(args.scenario, args.with_model)
+
+    expected_notices = {
+        "base": {"N-01"},
+        "active_notice": {"N-01", "N-02"},
+    }
+    offline_checks = {
+        "plan_conflict": result["plan_status"] == "record_conflict",
+        "baseline_candidates": set(result["baseline_candidates"]) == {
+            "R-02", "R-03"
+        },
+        "scenario_notices": set(result["notices"]) == expected_notices[
+            args.scenario
+        ],
+    }
+    result["offline_checks"] = offline_checks
     print(json.dumps(
         result, ensure_ascii=False, indent=2
     ))
 
-    if args.with_model and not result[
-        "evaluation"
-    ]["case_pass"]:
+    if not all(offline_checks.values()) or (
+        args.with_model and not result["evaluation"]["case_pass"]
+    ):
         raise SystemExit(1)
 
 
