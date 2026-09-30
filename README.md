@@ -1,5 +1,7 @@
 # Property Operations Triage Agent
 
+[![Offline checks](https://github.com/yushi916/property-operations-triage-agent/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/yushi916/property-operations-triage-agent/actions/workflows/ci.yml)
+
 A Python prototype for reviewing fictional residential property reports
 against notices, work orders, shared assets, and service records. It
 produces an evidence-based proposal for a human reviewer. Approval and
@@ -7,6 +9,16 @@ internal task creation are separate steps.
 
 **Scope:** Portfolio demonstration with synthetic data. The Agent's
 classifications are suggestions, not verified fault diagnoses.
+
+## Verification at a glance
+
+| Check | What it verifies | Boundary |
+| --- | --- | --- |
+| Offline unit tests | Candidate discovery, evidence validation, review versions, audit behavior, and failure traces | No live model call |
+| Two no-model scenarios | Fixed fixture results for the baseline, plan conflict, and notices | Does not assess Agent classification |
+| Recorded-run replay | Proposal and tool-trace checks for two designed cases | Replays saved runs; not a general accuracy estimate |
+
+GitHub Actions runs these checks on Python 3.11 without a Gemini API key.
 
 ## What the demo shows
 
@@ -113,17 +125,35 @@ business accuracy measurement.
 
 ## Example investigation
 
-The seed case starts with report `R-01`. Programmatic candidate
-discovery checks nearby reports and shared-asset coverage. The Agent
-then selects evidence tools and proposes relationships for `R-02`,
-`R-03`, and `R-04`. The `active_notice`
-scenario adds a notice covering 3栋 but does not by itself establish
-that a report from 5栋 has the same cause.
+The synthetic case starts with `R-01`: a 3栋 resident reports a water
+outage at 09:05. Deterministic candidate discovery finds nearby
+same-building reports and a 5栋 report through shared asset `A-01`.
+The [recorded base run](evals/recorded_runs/base_2026-09-29.json)
+shows the Agent selecting read-only evidence tools and proposing:
 
-The proximity baseline associates reports by building and time window.
-In the seed case it identifies `R-02`, incorrectly includes `R-03`,
-and does not assess cross-building `R-04`. This is a comparison on one
-designed example, not a general accuracy measurement.
+| Report | Recorded relation | Evidence and remaining boundary |
+| --- | --- | --- |
+| `R-02` | `possible_same_event` | Another 3栋 whole-home outage close in time; the cause is not confirmed |
+| `R-03` | `hold_separate` | A local kitchen-tap report with its own open work order `W-02` |
+| `R-04` | `needs_verification` | 5栋 shares asset `A-01`, and `W-03` investigates pressure; a common cause is not established |
+
+The base run marks notice `N-01` as expired. The
+[active-notice run](evals/recorded_runs/active_notice_2026-09-29.json)
+adds active notice `N-02` for 3栋; that notice alone does not explain
+the 5栋 report. These are two designed examples, not an accuracy estimate.
+
+The same-building, 30-minute baseline includes `R-03` and misses
+cross-building `R-04` in this fixture. The proposal remains pending
+until a reviewer decides; approval can create an internal task, not
+a confirmed repair or resident notification.
+
+## Why structured evidence tools?
+
+This version queries structured reports, notices, assets, and work
+orders by ID, time, location, and version. Exact record and version
+checks support the review workflow; the project does not use a vector
+store. The earlier portfolio projects use RAG for policy documents,
+while this case centers on reconciling operational records.
 
 ## Project layout
 
