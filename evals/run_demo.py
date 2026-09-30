@@ -86,6 +86,7 @@ def run_demo(scenario: str, with_model: bool) -> dict:
                             "message": error_detail.get("message"),
                             "run_status": error_detail.get("run_status"),
                             "rounds": error_detail.get("rounds"),
+                            "error_type": error_detail.get("error_type"),
                             "validation_error": error_detail.get(
                                 "validation_error"
                             ),

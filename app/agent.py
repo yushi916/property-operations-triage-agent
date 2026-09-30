@@ -76,18 +76,28 @@ def investigate_report(
         )
 
         for round_number in range(1, max_rounds + 1):
-            interaction = client.interactions.create(
-                model=model,
-                store=False,
-                system_instruction=SYSTEM_INSTRUCTION,
-                input=history,
-                tools=TOOL_DEFINITIONS,
-                response_format={
-                    "type": "text",
-                    "mime_type": "application/json",
-                    "schema": TriageProposal.model_json_schema(),
-                },
-            )
+            try:
+                interaction = client.interactions.create(
+                    model=model,
+                    store=False,
+                    system_instruction=SYSTEM_INSTRUCTION,
+                    input=history,
+                    tools=TOOL_DEFINITIONS,
+                    response_format={
+                        "type": "text",
+                        "mime_type": "application/json",
+                        "schema": TriageProposal.model_json_schema(),
+                    },
+                )
+            except Exception as exc:
+                return {
+                    "status": "model_call_failed",
+                    "report_id": report_id,
+                    "rounds": round_number,
+                    "trace": trace,
+                    "draft": "",
+                    "error_type": type(exc).__name__,
+                }
             steps = interaction.steps or []
             history.extend(step.model_dump() for step in steps)
             calls = [

@@ -334,6 +334,7 @@ def create_review_router(db_path):
                     "rounds": run.get("rounds"),
                     "trace": run.get("trace", []),
                     "validation_error": run.get("validation_error"),
+                    "error_type": run.get("error_type"),
                 },
             )
 
