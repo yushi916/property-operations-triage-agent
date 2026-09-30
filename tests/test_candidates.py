@@ -40,6 +40,36 @@ class CandidateDiscoveryTest(unittest.TestCase):
             call["outcome"]["ok"] for call in result["trace"]
         ))
 
+    def test_excludes_unrelated_and_out_of_window_reports(self):
+        with TemporaryDirectory() as folder:
+            db = Path(folder) / "case.db"
+            create_scenario_database(
+                db, ROOT / "data" / "demo_case.json", "base"
+            )
+            with closing(sqlite3.connect(db)) as conn:
+                with conn:
+                    conn.executemany("""
+                        INSERT INTO reports
+                            (id, reported_at, building, text, version)
+                        VALUES (?, ?, ?, ?, ?)
+                    """, [
+                        ("R-05", "2026-09-28T09:12:00+08:00",
+                         "8栋", "同时发生但无共同设备", 1),
+                        ("R-06", "2026-09-28T10:05:00+08:00",
+                         "3栋", "同楼栋但超过时间窗", 1),
+                        ("R-07", "2026-09-28T10:05:00+08:00",
+                         "5栋", "共用设备但超过时间窗", 1),
+                    ])
+                result = discover_report_candidates(
+                    SQLiteEvidenceTools(conn), "R-01"
+                )
+
+        found = {
+            item["evidence"]["source_id"]
+            for item in result["candidates"]
+        }
+        self.assertEqual(found, {"R-02", "R-03", "R-04"})
+
     def test_agent_receives_discovered_candidates(self):
         from types import SimpleNamespace
         from app.agent import investigate_report
