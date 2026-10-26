@@ -103,6 +103,53 @@ Submitting a report for Agent investigation also requires
 `GEMINI_API_KEY`.
 
 
+## Staff report intake (milestone 1)
+
+Authenticated staff can now create a synthetic report with `POST /v1/reports`.
+This records the report and an intake receipt; it does not call Gemini,
+create a proposal, dispatch a technician, or send a notification.
+
+In `/docs`, supply the existing `X-Review-Token` through **Authorize**, then
+try `POST /v1/reports` with:
+
+```json
+{
+  "request_id": "82d2fbc5-87c5-430c-a6ec-f7ccda655ba0",
+  "building": "3栋",
+  "text": "整套房没有水，原因待核实（合成演示报事）",
+  "source": "phone",
+  "occurred_at": null,
+  "risk_status": "no_immediate_risk_reported"
+}
+```
+
+- Use a new UUID for each deliberate new submission. Network retries reuse
+  the same UUID: the first response is `201`, an identical retry is `200`,
+  and reusing the UUID for different content returns `409`.
+- The current demo accepts buildings already present in its reports or asset
+  coverage (`3栋` and `5栋` in the fixture). This is a temporary demo registry,
+  not a complete property inventory.
+- `reported_at` is the server's receipt time. `occurred_at` is the resident's
+  reported occurrence time, which may be unknown. If supplied, it must have a
+  timezone and cannot be in the future. Candidate discovery continues to use
+  `reported_at`; backdating the occurrence does not backdate receipt.
+- Staff must explicitly choose `no_immediate_risk_reported`, `urgent`, or
+  `unknown`. This is a staff declaration, not an automated safety diagnosis.
+  Urgent/unknown reports are saved with `manual_attention`; the normal
+  `/v1/reviews/report` model submission returns `409` for these reports.
+  The system tells staff to contact the responsible person and does not make
+  that contact automatically. Legacy fixtures have no intake risk assessment.
+- Read the returned ID through `GET /v1/reports/{report_id}`. The `intake`
+  field includes source, both timestamps, declared risk, and the fixed demo
+  actor. Existing fixture reports return `intake: null`.
+
+Keep all demo inputs synthetic: evidence reads retain the existing public
+demo access boundary. This is not a public resident portal or emergency system.
+
+See [milestone validation](docs/milestone-1-validation.md) and
+[the intake decision](docs/decisions/0001-report-intake.md). Review completeness,
+query freshness, durable failed runs, UI, and deployment remain later work.
+
 ## Reviewer correction and recorded runs
 
 `POST /v1/reviews/{proposal_id}/revisions` lets an authenticated reviewer
