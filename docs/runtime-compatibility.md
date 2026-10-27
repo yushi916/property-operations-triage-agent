@@ -26,11 +26,17 @@ only the project checks establish the tested combinations.
 | Linux / Python 3.12.14 / venv | 24 unit tests, both no-model scenarios, replay and process-restart HTTP check passed on M1 commit 37b15c4; pip check repeated successfully in this review | Offline checks and local HTTP; no live Gemini call |
 | Linux / Python 3.11 / GitHub Actions | M1 [run 40314543790](https://github.com/yushi916/property-operations-triage-agent/actions/runs/40314543790) completed successfully | Before the new matrix; exact interpreter patch was not recorded here |
 | Windows / Anaconda Python 3.12.15 / myenv | User confirmed executable/version, dependency installation and `No broken requirements found` | Database initialization, tests and API/restart acceptance are pending; this is not a Windows end-to-end pass |
-| New three-job compatibility matrix | Results are published under the current PR's Checks tab; configuration alone is not a pass | When interpreting a run, inspect all three jobs, exact interpreter versions and installed package logs. Hosted CPython on Windows is not the user's Anaconda environment |
+| New matrix: Linux / CPython 3.11.17 | 24 tests, pip check, both scenarios and replay passed | Hosted Ubuntu; no live model |
+| New matrix: Linux / CPython 3.12.15 | 24 tests, pip check, both scenarios and replay passed | Hosted Ubuntu; no live model |
+| New matrix: Windows / CPython 3.12.10 | 24 tests, pip check, both scenarios and replay passed | Hosted Windows Server 2025; not the user's Anaconda 3.12.15 |
 
-CI uses minor selectors (`3.11` / `3.12`) and records the exact patch version in
-the job log. Each row is tested only when its job passes; this document does
-not turn configured jobs or a dependency resolver result into test evidence.
+The three-job results were observed for commit `450fc9e` in
+[run 40466419616](https://github.com/yushi916/property-operations-triage-agent/actions/runs/40466419616).
+[compatibility-evidence.json](compatibility-evidence.json) records the exact
+interpreter, platform and installed package versions from those job logs.
+The `3.12` selector resolved differently on Linux and Windows in this run;
+minor selectors do not imply identical patch versions or Anaconda builds.
+Each row above was checked for success, not inferred from the configuration.
 
 `pip check` verifies declared dependency compatibility. It does not execute
 the report workflow, test model APIs, or prove the absence of security issues.

@@ -27,9 +27,10 @@ task; it does not certify a fault cause or completed repair.
 Runtime compatibility is tracked [separately](runtime-compatibility.md).
 The Windows walkthrough uses confirmed Anaconda Python 3.12.15; requirements
 installation and dependency checking are complete by user report, while local
-application acceptance is still pending. CI now also configures Linux/Python
-3.12 and Windows/Python 3.12 coverage in addition to Linux/Python 3.11. Only a
-successful job is validation; configuring a matrix is not a passing result.
+application acceptance is still pending. The expanded CI passed on Linux
+CPython 3.11.17 and 3.12.15, and Windows CPython 3.12.10 (commit 450fc9e;
+run 40466419616). Exact packages and boundaries are in the compatibility
+record. This does not establish Anaconda/Windows end-to-end acceptance.
 
 Keep FastAPI, Python, existing read-only evidence tools, SQLite for the first
 slice, versioned review, transactions, recorded replay and unittest. Initial
