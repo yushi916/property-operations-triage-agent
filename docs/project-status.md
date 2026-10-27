@@ -1,6 +1,6 @@
 # Project delivery status
 
-Updated: 2026-10-26. This tracks verified project behavior, not a person's
+Updated: 2026-10-27. This tracks verified project behavior, not a person's
 independent proficiency. Private learning notes are maintained separately.
 
 ## Goal
@@ -23,6 +23,13 @@ task; it does not certify a fault cause or completed repair.
 | M5 database migration and deployment | Planned | Postgres/Alembic as separate change, identity/access decisions, persistent state, restart and deployment verification |
 
 ## Decisions kept in scope
+
+Runtime compatibility is tracked [separately](runtime-compatibility.md).
+The Windows walkthrough uses confirmed Anaconda Python 3.12.15; requirements
+installation and dependency checking are complete by user report, while local
+application acceptance is still pending. CI now also configures Linux/Python
+3.12 and Windows/Python 3.12 coverage in addition to Linux/Python 3.11. Only a
+successful job is validation; configuring a matrix is not a passing result.
 
 Keep FastAPI, Python, existing read-only evidence tools, SQLite for the first
 slice, versioned review, transactions, recorded replay and unittest. Initial

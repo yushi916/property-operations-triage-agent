@@ -18,7 +18,10 @@ classifications are suggestions, not verified fault diagnoses.
 | Two no-model scenarios | Fixed fixture results for the baseline, plan conflict, and notices | Does not assess Agent classification |
 | Recorded-run replay | Proposal and tool-trace checks for two designed cases | Replays saved runs; not a general accuracy estimate |
 
-GitHub Actions runs these checks on Python 3.11 without a Gemini API key.
+GitHub Actions runs these checks without a Gemini API key. Its compatibility
+matrix covers Linux/Python 3.11, Linux/Python 3.12, and Windows/Python 3.12;
+see [runtime compatibility](docs/runtime-compatibility.md) for observed results
+and the distinction between CI and a local Anaconda environment.
 
 ## What the demo shows
 
@@ -33,7 +36,9 @@ GitHub Actions runs these checks on Python 3.11 without a Gemini API key.
 
 ## Setup
 
-Use Python 3.11 or a compatible version. From the repository root:
+Use Python 3.12 for the current development walkthrough. Python 3.11 remains
+in CI for compatibility; other minor versions are not claimed as tested.
+From the repository root:
 
 ```bash
 python -m venv .venv
@@ -48,7 +53,15 @@ Then install dependencies:
 
 ```bash
 python -m pip install -r requirements.txt
+python -m pip check
 ```
+
+For an existing Anaconda environment, activate it first (for this walkthrough:
+`conda activate myenv`) and run the install/check commands above. The `.venv`
+creation and activation steps are an alternative, not an additional requirement.
+An installation/dependency check alone is not application acceptance: continue
+with the tests and API walkthrough. Do not run a bulk dependency upgrade as
+part of setup.
 
 ## Run without a model or API key
 
