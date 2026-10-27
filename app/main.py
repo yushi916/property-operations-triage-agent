@@ -8,6 +8,8 @@ from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.review import review_plan_pair
+from app.report_api import ReportOut, create_report_router
+from app.report_store import get_report_intake, initialize_report_store
 from app.tools import SQLiteEvidenceTools
 
 
@@ -34,14 +36,6 @@ class PlanReviewResponse(BaseModel):
     ]
     evidence_refs: list[EvidenceRef]
     next_action: str
-
-
-class ReportOut(BaseModel):
-    id: str
-    version: int
-    reported_at: datetime
-    building: str
-    text: str
 
 
 class AssetOut(BaseModel):
@@ -85,9 +79,10 @@ def create_app(db_path: Path | None = None) -> FastAPI:
     def get_report(report_id: str) -> ReportOut:
         with db_connection() as conn:
             evidence = SQLiteEvidenceTools(conn).get_report(report_id)
+            intake = get_report_intake(conn, report_id)
         if evidence is None:
             raise HTTPException(404, "报事不存在")
-        return ReportOut(**evidence["record"])
+        return ReportOut(**evidence["record"], intake=intake)
 
     @api.get(
         "/v1/buildings/{building}/assets",
@@ -147,6 +142,7 @@ def create_app(db_path: Path | None = None) -> FastAPI:
     from app.review_api import create_review_router
 
     if database.is_file():
+        initialize_report_store(database)
         initialize_review_store(database)
         initialize_task_store(database)
     elif db_path is not None:
@@ -156,6 +152,7 @@ def create_app(db_path: Path | None = None) -> FastAPI:
         if not database.is_file():
             raise HTTPException(503, "数据库尚未初始化")
 
+    api.include_router(create_report_router(database))
     api.include_router(
         create_review_router(database),
         dependencies=[Depends(require_existing_database)],

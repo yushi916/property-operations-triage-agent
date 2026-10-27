@@ -295,6 +295,8 @@ def create_review_router(db_path):
                 "SELECT 1 FROM reports WHERE id = ?",
                 (body.report_id,),
             ).fetchone()
+            from app.report_store import get_report_intake
+            intake = get_report_intake(conn, body.report_id)
             pending = conn.execute("""
                 SELECT 1 FROM review_proposals
                 WHERE kind = 'report_triage'
@@ -304,6 +306,12 @@ def create_review_router(db_path):
 
         if exists is None:
             raise HTTPException(404, "起始报事不存在")
+        if intake is not None and intake["triage_route"] == "manual_attention":
+            raise HTTPException(409, {
+                "message": "该报事需先人工处置，不能进入普通模型研判",
+                "triage_route": "manual_attention",
+                "next_action": intake["next_action"],
+            })
         if pending is not None:
             raise HTTPException(409, "该报事已有待审核建议")
 
